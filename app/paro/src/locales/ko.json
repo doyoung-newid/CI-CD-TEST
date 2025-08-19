@@ -1,0 +1,81 @@
+{
+    "common": {
+        "welcome": "Welcome"
+    },
+    "nav": {
+        "pages": "Pages",
+        "home": "Home",
+        "channels": "Channels",
+        "onDemand": "On Demand",
+        "library": "Library",
+        "linear": "Linear",
+        "avod": "Avod",
+        "channel": "Channel",
+        "series": "Series",
+        "program": "Program",
+        "category": "Category",
+        "categories": "Categories",
+        "relevance": "Relevance",
+        "searchKeywords": "Search Keywords",
+        "legals": "Legals"
+    },
+    "button": {
+        "save": "Save",
+        "search": "Search",
+        "cancel": "Cancel"
+    },
+    "page": {
+        "title": "Page"
+    },
+    "library": {
+        "title": "Library",
+        "tableCol0": "Thumbnail",
+        "tableCol1": "ID",
+        "tableCol2": "Title",
+        "tableCol3": "Category",
+        "tableCol4": "Weight",
+        "tableCol5": "Relevance",
+        "tableCol6": "Search Keywords",
+        "tableCol7": "Updated Date",
+        "tableCol8": "Catchphrase",
+        "tableCol9": "Tag"
+    },
+    "metadata": {
+        "title": "Settings",
+        "tableCol0": "Thumbnail",
+        "tableCol1": "ID",
+        "tableCol2": "Title",
+        "tableCol3": "Category",
+        "tableCol4": "Weight",
+        "tableCol5": "Relevance",
+        "tableCol6": "Search Keywords",
+        "tableCol7": "Updated Date",
+        "tableCol8": "Catchphrase",
+        "tableCol9": "Tag"
+    },
+    "category": {
+        "title": "Category List",
+        "placeholder": {
+            "input": "Enter the category in English",
+            "cell": "Category"
+        },
+        "errorMessage": {
+            "duplicate": "'{key}' is already used",
+            "update": "Please check for duplicate or incorrect characters.",
+            "delete": "Categories with registered content cannot be deleted."
+        },
+        "emptyMessage": {
+            "content": "No {type} content"
+        },
+        "confirm": {
+            "delete": "Are you sure you want to delete {count} list?"
+        },
+        "button": {
+            "view": "View"
+        },
+        "type": {
+            "linear": "Linear",
+            "avod": "Avod"
+        }
+    }
+}
