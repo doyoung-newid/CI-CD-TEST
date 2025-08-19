@@ -1,0 +1,44 @@
+{
+    "name": "template",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host",
+        "build": "tsc -b && vite build",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "prettier": "prettier --write .",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@plitvice/ui": "workspace:*",
+        "@plitvice/util": "workspace:*",
+        "@tailwindcss/vite": "catalog:",
+        "i18next": "catalog:",
+        "jotai": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "react-i18next": "catalog:",
+        "react-router": "catalog:",
+        "date-fns": "^4.1.0",
+        "tailwindcss": "catalog:"
+    },
+    "devDependencies": {
+        "@eslint/js": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "@vitejs/plugin-react": "catalog:",
+        "eslint": "catalog:",
+        "eslint-plugin-react-hooks": "catalog:",
+        "eslint-plugin-react-refresh": "catalog:",
+        "globals": "catalog:",
+        "prettier": "catalog:",
+        "prettier-plugin-tailwindcss": "catalog:",
+        "typescript": "catalog:",
+        "typescript-eslint": "catalog:",
+        "vite": "catalog:",
+        "vite-plugin-svgr": "catalog:",
+        "vite-tsconfig-paths": "catalog:"
+    }
+}

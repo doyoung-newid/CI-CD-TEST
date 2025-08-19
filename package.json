@@ -1,0 +1,40 @@
+{
+    "name": "plitvice-react",
+    "version": "0.0.0",
+    "description": "plitvice monorepo",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "preinstall": "npx only-allow pnpm",
+        "scaffolding": "node script/template-copy-script.mjs",
+        "prettier": "prettier --write .",
+        "prepare": "husky",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "build:ui": "pnpm --filter @plitvice/ui build",
+        "build:util": "pnpm --filter @plitvice/util build",
+        "build-storybook": "pnpm --filter=@plitvice/ui run build-storybook"
+    },
+    "author": "NEWID",
+    "license": "ISC",
+    "packageManager": "pnpm@10.5.2",
+    "devDependencies": {
+        "@eslint/js": "catalog:",
+        "eslint": "catalog:",
+        "eslint-config-prettier": "catalog:",
+        "eslint-plugin-prettier": "catalog:",
+        "eslint-plugin-react": "catalog:",
+        "eslint-plugin-react-hooks": "catalog:",
+        "eslint-plugin-react-refresh": "catalog:",
+        "husky": "catalog:",
+        "lint-staged": "catalog:",
+        "prettier": "catalog:",
+        "prettier-plugin-tailwindcss": "catalog:",
+        "typescript": "catalog:",
+        "typescript-eslint": "catalog:"
+    },
+    "lint-staged": {
+        "**/*.{js,ts,tsx}": "eslint --fix",
+        "**/*.{js,ts,tsx,json,css,md}": "prettier --write"
+    }
+}
