@@ -11,7 +11,7 @@ const COLOR_STYLES = {
     violet: 'bg-[#E7E2FE] border-[#D5CCFF] text-[#A86EF7]',
     fuchsia: 'bg-[#F8E0FF] border-[#F4C7FF] text-[#CD68E3]',
     pink: 'bg-[#FCE4F1] border-[#FCCEE8] text-[#F967B2]',
-    gray: 'bg-[#F2F2F2] border-[#D8DBD9] text-[#8E8E90]',
+    grey: 'bg-[#F2F2F2] border-[#D8DBD9] text-[#8E8E90]',
 } as const;
 
 export type StatusColor = keyof typeof COLOR_STYLES;

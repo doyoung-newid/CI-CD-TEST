@@ -1,24 +1,35 @@
 import React, { useEffect, useRef } from 'react';
 import { DayButtonProps, DayPickerProps } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useSingleDatePicker } from '@/components/datepicker/SingleDatePicker.hooks.ts';
-import { DatePicker } from '@/components/datepicker/DatePicker.tsx';
-import { CustomDayButton } from '@/components/datepicker/DatePicker.custom.tsx';
+import { useSingleDatePicker } from '@/components/datepicker/SingleDatePicker.hooks';
+import { DatePicker } from '@/components/datepicker/DatePicker';
+import { CustomDayButton } from '@/components/datepicker/DatePicker.custom';
 import {
-    CustomDatePickerProps,
+    BaseDatePickerProps,
     DEFAULT_BUTTON_TEXT_GROUP,
     DEFAULT_LOCALE,
-} from '@/components/datepicker/DatePicker.types.ts';
+    isBoxValid,
+    ValidationErrorMap,
+    ValidationMessages,
+    ValidationState,
+} from '@/components/datepicker/DatePicker.types';
+import { InfoIcon, Tooltip } from '@/index';
 
-export type SingleDatePickerProps = CustomDatePickerProps & {
+export const SINGLE_VALIDATION_MESSAGES: Record<ValidationErrorMap['single'], string> = {
+    invalidDate: 'Invalid date',
+    invalidTime: 'Invalid time',
+};
+
+export interface SingleDatePickerProps extends BaseDatePickerProps {
     placeholder?: {
         date: string;
         time: string;
     };
     value: Date | undefined;
+    validationMessages?: ValidationMessages<'single'>;
     onChange?: (date: Date | undefined) => void;
     onValidationChange?: (isValid: boolean) => void;
-};
+}
 
 export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
     className = '',
@@ -31,6 +42,8 @@ export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
         time: '',
     },
     value,
+    validationMessages = SINGLE_VALIDATION_MESSAGES,
+    disabledCondition = () => false,
     onChange,
     onClose,
     onValidationChange,
@@ -58,6 +71,7 @@ export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
         showTime,
         onClose,
         isOpen,
+        disabledCondition,
     });
 
     const handleContentMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -97,22 +111,23 @@ export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
         components: {
             DayButton: (props: DayButtonProps) => <DayButton {...props} />,
         },
+        disabled: disabledCondition,
     };
 
-    const prevValidationRef = useRef(boxState.isValid);
+    const prevValidationRef = useRef(isBoxValid(boxState));
     useEffect(() => {
-        const currentValid = boxState.isValid;
+        const currentValid = isBoxValid(boxState);
 
         if (prevValidationRef.current !== currentValid) {
             prevValidationRef.current = currentValid;
             onValidationChange?.(currentValid);
         }
-    }, [boxState.isValid, onValidationChange]);
+    }, [boxState, onValidationChange]);
 
     return (
         <DatePicker className={className} ref={ref}>
             <DatePicker.Input
-                className="mb-[10px] mt-[9px]"
+                className="mb-[10px] mt-[9px] px-[14px]"
                 showTime={showTime}
                 state={boxState}
                 dateInput={{
@@ -136,7 +151,15 @@ export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
                         : undefined
                 }
                 onBoxFocus={handleInputFocus}
-            />
+            >
+                <Tooltip
+                    className={`${!isBoxValid(boxState) ? '' : 'invisible'}`}
+                    text={getValidationMessage(boxState.validation, validationMessages)}
+                    place={'right'}
+                >
+                    <InfoIcon className={'h-[20px] w-[20px] align-middle text-red-600'} />
+                </Tooltip>
+            </DatePicker.Input>
             <div onMouseDown={handleContentMouseDown} onMouseUp={handleContentMouseUp}>
                 <DatePicker.Content dayPickerProps={dayPickerProps} />
             </div>
@@ -155,13 +178,17 @@ export const SingleDatePicker: React.FC<SingleDatePickerProps> = ({
 };
 
 function DayButton(props: DayButtonProps) {
-    const { modifiers } = props;
+    const { modifiers, disabled } = props;
 
     const { selected: isSelected, today: isToday, outside: isOutside } = modifiers;
 
     const getButtonClasses = () => {
         const base = 'w-full h-full flex items-center justify-center rounded-full border text-r14 relative';
         const hover = 'hover:bg-blue-100 hover:border-blue-600';
+
+        if (disabled) {
+            return `${base} border-transparent text-grey-20 bg-transparent`;
+        }
 
         if (isSelected) {
             return `${base} text-white border-blue-600 bg-blue-600`;
@@ -172,7 +199,7 @@ function DayButton(props: DayButtonProps) {
         }
 
         if (isOutside) {
-            return `${base} border-transparent text-grey-20 ${hover}`;
+            return `${base} border-transparent text-grey-50 ${hover}`;
         }
 
         return `${base} border-transparent text-grey-90 ${hover}`;
@@ -180,3 +207,17 @@ function DayButton(props: DayButtonProps) {
 
     return <CustomDayButton buttonClasses={getButtonClasses()} {...props} />;
 }
+
+const getValidationMessage = (
+    state: ValidationState<'single'>,
+    customMessages: ValidationMessages<'single'> = {},
+): string => {
+    if (state.status === 'valid') return '';
+
+    const messages = {
+        ...SINGLE_VALIDATION_MESSAGES,
+        ...customMessages,
+    };
+
+    return messages[state.error] || '';
+};

@@ -34,7 +34,7 @@ async function createProject() {
             console.error('🚫 Please enter a project name. Usage: pnpm scaffolding <project-name>');
             process.exit(1);
         }
-        const projectPath = path.join('app', projectName);
+        const projectPath = path.join('web', projectName);
         const templateDir = path.join('shared', 'template');
 
         if (existsSync(projectPath)) {
@@ -60,7 +60,7 @@ async function createProject() {
         packageJson.name = projectName;
         await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-        const tsconfigPath = path.join(projectPath, 'tsconfig.app.json');
+        const tsconfigPath = path.join(projectPath, 'tsconfig.web.json');
         if (existsSync(tsconfigPath)) {
             let tsconfigContent = await readFile(tsconfigPath, 'utf8');
             tsconfigContent = updateTsconfigPaths(tsconfigContent);

@@ -1,35 +1,50 @@
-import { Locale } from 'react-day-picker';
 import { enUS } from 'date-fns/locale';
 import { format } from 'date-fns';
-import { DEFAULT_BUTTON_TEXT_GROUP } from '@/components/datepicker/DatePicker.types.ts';
-import { SingleDatePicker } from '@/components/datepicker/SingleDatePicker.tsx';
+import {
+    BaseDatePickerProps,
+    DEFAULT_BUTTON_TEXT_GROUP,
+    ValidationMessages,
+} from '@/components/datepicker/DatePicker.types';
+import {
+    SINGLE_VALIDATION_MESSAGES,
+    SingleDatePicker,
+    SingleDatePickerProps,
+} from '@/components/datepicker/SingleDatePicker';
 import { DateRange } from 'react-day-picker';
-import { DateRangePicker } from '@/components/datepicker/DateRangePicker.tsx';
+import {
+    DateRangePicker,
+    DateRangePickerProps,
+    RANGE_VALIDATION_MESSAGES,
+} from '@/components/datepicker/DateRangePicker';
 import { DatePicker } from './DatePicker';
-import { useDatePickerBox } from '@/components/datepicker/DatePickerBox.hooks.ts';
+import { useDatePickerBox } from '@/components/datepicker/DatePickerBox.hooks';
 import { useMemo } from 'react';
 
-interface DateBoxProps<T> {
+type DateBoxProps<T extends BaseDatePickerProps> = Pick<
+    T,
+    'showTime' | 'disabledCondition' | 'locale' | 'buttonText'
+> & {
     width?: number;
     placeholder?: string;
-    buttonText?: { delete: string; today: string };
-    showTime?: boolean;
-    locale?: Locale;
-    value?: T;
-    onChange?: (value: T | undefined) => void;
-}
+};
 
-const formatString = (showTime: boolean) => (showTime ? 'yyyy/MM/dd HH:mm' : 'yyyy/MM/dd');
+export interface SingleDateBoxProps extends DateBoxProps<SingleDatePickerProps> {
+    value?: Date;
+    onChange?: (value: Date | undefined) => void;
+    validationMessages?: ValidationMessages<'single'>;
+}
 
 export const SingleDatePickerBox = ({
     placeholder = '',
     value,
     onChange,
     showTime = true,
+    disabledCondition = () => false,
     locale = enUS,
     buttonText = DEFAULT_BUTTON_TEXT_GROUP,
+    validationMessages = SINGLE_VALIDATION_MESSAGES,
     width = 0,
-}: DateBoxProps<Date>) => {
+}: SingleDateBoxProps) => {
     const { pickerRef, triggerRef, isOpen, toggleOpen, close, handleValidationChange } = useDatePickerBox<boolean>({
         validate: (validation) => validation,
         initialValidation: true,
@@ -46,9 +61,9 @@ export const SingleDatePickerBox = ({
     const boxClasses = `${isOpen ? 'border-blue-500' : 'border-grey-40'} ${formatDate ? 'text-grey-70' : 'text-grey-40'}`;
 
     return (
-        <div className="relative flex w-fit flex-col">
+        <div className="flex-col-50 relative flex w-fit">
             <DatePicker.Trigger
-                className={`text-r16 ${boxClasses}`}
+                className={`text-r16 bg-white ${boxClasses}`}
                 width={width}
                 placeholder={placeholder}
                 value={formatDate}
@@ -63,8 +78,10 @@ export const SingleDatePickerBox = ({
                     isOpen={isOpen}
                     buttonText={buttonText}
                     locale={locale}
-                    onClose={close}
+                    disabledCondition={disabledCondition}
+                    validationMessages={validationMessages}
                     onValidationChange={handleValidationChange}
+                    onClose={close}
                     ref={pickerRef}
                 />
             )}
@@ -72,15 +89,25 @@ export const SingleDatePickerBox = ({
     );
 };
 
+export interface DateRangeBoxProps extends DateBoxProps<DateRangePickerProps> {
+    value?: DateRange;
+    onChange?: (value: DateRange | undefined) => void;
+    maxDays?: number;
+    validationMessages?: ValidationMessages<'range'>;
+}
+
 export const DateRangePickerBox = ({
     placeholder = '',
     value,
     onChange,
+    maxDays,
     showTime = true,
+    disabledCondition = () => false,
     locale = enUS,
     buttonText = DEFAULT_BUTTON_TEXT_GROUP,
+    validationMessages = RANGE_VALIDATION_MESSAGES,
     width = 0,
-}: DateBoxProps<DateRange>) => {
+}: DateRangeBoxProps) => {
     const { pickerRef, triggerRef, isOpen, toggleOpen, close, handleValidationChange } = useDatePickerBox<{
         start: boolean;
         end: boolean;
@@ -104,7 +131,7 @@ export const DateRangePickerBox = ({
     return (
         <div className="relative flex w-fit flex-col">
             <DatePicker.Trigger
-                className={`text-r16 ${boxClasses}`}
+                className={`text-r16 bg-white ${boxClasses}`}
                 width={width}
                 placeholder={placeholder}
                 value={formatRange}
@@ -120,12 +147,17 @@ export const DateRangePickerBox = ({
                     isOpen={isOpen}
                     buttonText={buttonText}
                     locale={locale}
-                    onClose={close}
-                    onChange={handleRangeChange}
+                    disabledCondition={disabledCondition}
+                    maxDays={maxDays}
+                    validationMessages={validationMessages}
                     onValidationChange={handleValidationChange}
+                    onChange={handleRangeChange}
+                    onClose={close}
                     ref={pickerRef}
                 />
             )}
         </div>
     );
 };
+
+const formatString = (showTime: boolean) => (showTime ? 'yyyy/MM/dd HH:mm' : 'yyyy/MM/dd');

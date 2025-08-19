@@ -1,5 +1,5 @@
 import React, { createContext, forwardRef, ReactNode, useContext } from 'react';
-import { BoxComponentStyles, Size } from '@/types/common.ts';
+import { BoxComponentStyles, Size } from '@/types/common';
 
 interface LabeledInputContextType {
     size: Extract<Size, 'small' | 'medium' | 'large'>;

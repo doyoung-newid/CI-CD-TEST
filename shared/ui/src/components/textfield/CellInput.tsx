@@ -1,8 +1,8 @@
 import React, { useCallback, forwardRef, useImperativeHandle } from 'react';
-import { BoxComponentStyles, Size } from '@/types/common.ts';
-import InputBox from './InputBox.tsx';
+import { BoxComponentStyles, Size } from '@/types/common';
+import InputBox from './InputBox';
 import IconReset from '@/assets/icReset.svg?react';
-import useCellInput from '@/components/textfield/cellInput.hooks.ts';
+import useCellInput from '@/components/textfield/cellInput.hooks';
 
 export interface CellInputRef {
     reset: () => void;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Drawer } from '@/components/expandfield/Drawer.tsx';
-import { Button } from '@/components/button/Button.tsx';
+import { Drawer } from '@/components/expandfield/Drawer';
+import { Button } from '@/components/button/Button';
 import { useState } from 'react';
 
 const meta: Meta<typeof Drawer> = {

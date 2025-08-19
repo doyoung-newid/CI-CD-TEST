@@ -44,7 +44,7 @@ export const Dialog = ({
             onClick={onClose}
         >
             <div
-                className={`transform rounded-[4px] bg-white shadow-xl transition-all duration-300 ease-in-out ${className} ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+                className={`bg-grey-5 transform rounded-[4px] shadow-xl transition-all duration-300 ease-in-out ${className} ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
                 style={{ ...sizeStyle }}
                 onClick={(e) => e.stopPropagation()}
                 onTransitionEnd={() => {

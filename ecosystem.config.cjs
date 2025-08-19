@@ -1,0 +1,32 @@
+module.exports = {
+  apps: [
+    {
+      name: "ness",
+      cwd: "./app/ness",
+      script: "pnpm",
+      args: "dev",
+      instances: 1,
+      exec_mode: "fork",
+      watch: true,
+      max_memory_restart: "1G",
+      error_file: "./logs/ness-error.log",
+      out_file: "./logs/ness-out.log",
+      log_file: "./logs/ness-combined.log",
+      time: true,
+    },
+    {
+      name: "paro",
+      cwd: "./app/paro",
+      script: "pnpm",
+      args: "dev",
+      instances: 1,
+      exec_mode: "fork",
+      watch: true,
+      max_memory_restart: "1G",
+      error_file: "./logs/paro-error.log",
+      out_file: "./logs/paro-out.log",
+      log_file: "./logs/paro-combined.log",
+      time: true,
+    },
+  ],
+};

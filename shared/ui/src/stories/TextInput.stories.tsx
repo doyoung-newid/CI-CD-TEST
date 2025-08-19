@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { TextInput, TextInputProps } from '@/components/textfield/TextInput.tsx';
+import { TextInput, TextInputProps } from '@/components/textfield/TextInput';
 
 const sizes = ['medium', 'large'] as const;
 

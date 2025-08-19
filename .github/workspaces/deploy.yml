@@ -1,4 +1,4 @@
-name: Test SSH Connection
+name: Deploy SSR to EC2
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - staging  
 
 jobs:
-  test-ssh:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,19 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Connect to EC2 and print logs
+      - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            echo "SSH 접속 test"
+            cd /plitvice
+            
+            # 최신 코드 가져오기
+            git pull origin staging
+            
+            # 전체 프로젝트 의존성 설치
+            pnpm install
+            
+            # PM2로 SSR 애플리케이션들 재시작
+            pm2 restart ecosystem.config.cjs
+            
+            echo "SSR deployment completed successfully"
+          EOF

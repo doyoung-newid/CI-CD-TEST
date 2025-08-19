@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@plitvice/ui": "workspace:*",
+        "@plitvice/util": "workspace:*",
         "@tailwindcss/vite": "catalog:",
         "i18next": "catalog:",
         "jotai": "catalog:",

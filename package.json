@@ -11,6 +11,7 @@
         "prepare": "husky",
         "lint": "eslint .",
         "format": "prettier --write .",
+        "typecheck": "pnpm -r typecheck",
         "build:ui": "pnpm --filter @plitvice/ui build",
         "build:util": "pnpm --filter @plitvice/util build",
         "build-storybook": "pnpm --filter=@plitvice/ui run build-storybook"
@@ -22,6 +23,8 @@
         "@eslint/js": "catalog:",
         "eslint": "catalog:",
         "eslint-config-prettier": "catalog:",
+        "eslint-import-resolver-typescript": "catalog:",
+        "eslint-plugin-import": "catalog:",
         "eslint-plugin-prettier": "catalog:",
         "eslint-plugin-react": "catalog:",
         "eslint-plugin-react-hooks": "catalog:",

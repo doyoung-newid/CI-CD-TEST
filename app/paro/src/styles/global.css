@@ -1,7 +1,0 @@
-@import 'tailwindcss';
-@tailwind utilities;
-
-@source '../**/*.{ts,tsx}';
-
-@layer base {
-}

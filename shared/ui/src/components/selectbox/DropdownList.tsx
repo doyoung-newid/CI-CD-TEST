@@ -1,5 +1,5 @@
-import useDropdownList from '@/components/selectbox/dropdownList.hooks.ts';
-import { Size } from '@/types/common.ts';
+import useDropdownList from '@/components/selectbox/dropdownList.hooks';
+import { Size } from '@/types/common';
 
 const SizeStyles = {
     small: {
@@ -24,6 +24,7 @@ export interface DropdownListProps {
     showAllOptionsOnFocus?: boolean;
     optionList: SelectOption[];
     onSelected?: (option: SelectOption) => void;
+    direction?: 'up' | 'down';
 }
 
 export interface SelectOption {
@@ -40,15 +41,17 @@ const DropdownList = ({
     showAllOptionsOnFocus = true,
     optionList,
     onSelected,
+    direction = 'down',
 }: DropdownListProps) => {
     const { filteredList } = useDropdownList(isFocused, inputValue, showAllOptionsOnFocus, optionList);
 
     const display = isFocused ? 'block' : 'hidden';
     const textStyle = SizeStyles[size].text;
+    const positionClasses = direction === 'down' ? 'top-[calc(100%+4px)]' : 'bottom-[calc(100%+4px)]';
 
     return (
         <ul
-            className={`border-grey-20 absolute left-0 right-0 top-[calc(100%+4px)] z-10 max-h-[200px] overflow-y-auto rounded-[4px] border bg-white px-0 py-[6px] shadow-md ${display} non-draggable z-[10000]`}
+            className={`border-grey-20 absolute left-0 right-0 ${positionClasses} max-h-[200px] overflow-y-auto rounded-[4px] border bg-white px-0 py-[6px] shadow-[0_4px_8px_0_rgba(28,28,28,0.30)] ${display} non-draggable z-[10000]`}
             role="listbox"
             aria-multiselectable="false"
         >
@@ -71,4 +74,4 @@ const DropdownList = ({
         </ul>
     );
 };
-export default DropdownList;
+export { DropdownList };

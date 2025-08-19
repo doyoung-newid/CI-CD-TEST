@@ -3,31 +3,42 @@
     "compilerOptions": {
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
         "target": "ES2020",
-        "useDefineForClassFields": true,
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "module": "ESNext",
+        "jsx": "react-jsx",
+        "isolatedModules": true,
+        "useDefineForClassFields": true,
         "skipLibCheck": true,
-
-        /* Paths */
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        },
+        "allowImportingTsExtensions": false,
 
         /* Bundler mode */
+        "module": "ESNext",
         "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "isolatedModules": true,
         "moduleDetection": "force",
-        "noEmit": true,
-        "jsx": "react-jsx",
+
+        /* Path */
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@plitvice/util": ["../util/src"], // 소스 참조
+            "@plitvice/util/*": ["../util/src/*"]
+        },
 
         /* Linting */
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "noUncheckedSideEffectImports": true
+        "noUncheckedSideEffectImports": true,
+
+        /* Reference */
+        "composite": true,
+        "declaration": true, // 프로젝트 참조 가능
+        "declarationMap": true,
+        "outDir": "./dist",
+        "rootDir": "src",
+        "noEmit": false,
+        "emitDeclarationOnly": true // .d.ts만 생성
     },
-    "include": ["src"]
+    "include": ["src"],
+    "references": [{ "path": "../util/tsconfig.app.json" }]
 }

@@ -15,7 +15,7 @@ export const defaultDayPickerProps: Partial<DayPickerProps> = {
         caption_label: 'text-m16 text-grey-90',
         month_grid: 'w-fit mt-[16px]',
         weekdays: 'flex w-fit',
-        weekday: 'w-[36px] py-[11px] text-center text-r12 text-grey-50',
+        weekday: 'w-[36px] py-[11px] text-center text-m12 text-grey-50',
         week: 'flex py-[2px]',
         day: 'w-full aspect-square text-r14 h-[36px]',
     },

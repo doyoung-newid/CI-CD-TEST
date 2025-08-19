@@ -1,18 +1,18 @@
-import { createContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import Toast from './Toast.tsx';
+import Toast from './Toast';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 export interface ToastMessage {
     id: number;
     message: string;
-    type: 'success' | 'error' | 'info' | 'warning';
+    type: ToastType;
     duration?: number;
     showCloseButton?: boolean;
 }
 
-interface ToastContextValue {
+export interface ToastContextValue {
     showToast: (
         message: string,
         type: ToastMessage['type'],
@@ -24,6 +24,7 @@ export const ToastContext = createContext<ToastContextValue | null>(null);
 
 const ToastProvider = ({ children }: { children: ReactNode }) => {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
 
     const removeToast = useCallback((id: number) => {
         setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
@@ -42,23 +43,28 @@ const ToastProvider = ({ children }: { children: ReactNode }) => {
         [],
     );
 
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     return (
         <ToastContext.Provider value={{ showToast }}>
             {children}
-            {createPortal(
-                <div className="z-9999 fixed bottom-[80px] left-1/2 flex -translate-x-1/2 flex-col items-center">
-                    {toasts.map((toast, index) => (
-                        <Toast
-                            key={toast.id}
-                            toast={toast}
-                            onDismiss={removeToast}
-                            index={index}
-                            totalToasts={toasts.length}
-                        />
-                    ))}
-                </div>,
-                document.body,
-            )}
+            {isMounted &&
+                createPortal(
+                    <div className="z-9999 fixed bottom-[80px] left-1/2 flex -translate-x-1/2 flex-col items-center">
+                        {toasts.map((toast, index) => (
+                            <Toast
+                                key={toast.id}
+                                toast={toast}
+                                onDismiss={removeToast}
+                                index={index}
+                                totalToasts={toasts.length}
+                            />
+                        ))}
+                    </div>,
+                    document.body,
+                )}
         </ToastContext.Provider>
     );
 };

@@ -1,8 +1,8 @@
 import React, { ForwardRefExoticComponent, ReactNode, RefAttributes } from 'react';
 import { DayPicker, DayPickerProps } from 'react-day-picker';
-import { defaultDayPickerProps } from '@/components/datepicker/DatePicker.custom.tsx';
-import { BoxConfig, BoxState } from '@/components/datepicker/DatePicker.types.ts';
-import { CalenderIcon } from '@/index.ts';
+import { defaultDayPickerProps } from '@/components/datepicker/DatePicker.custom';
+import { BoxConfig, BoxState, DEFAULT_BOX_STATE, isBoxValid } from '@/components/datepicker/DatePicker.types';
+import { CalenderIcon } from '@/index';
 
 export interface DatePickerContainerProps {
     className?: string;
@@ -27,8 +27,9 @@ export type DateTimeBoxProps = {
     showTime?: boolean;
     dateInput: BoxConfig;
     timeInput?: BoxConfig;
-    state: BoxState;
+    state: BoxState<'single'> | BoxState<'range'>;
     onBoxFocus?: () => void;
+    children?: ReactNode;
 };
 
 const DateTimeBox = ({
@@ -36,8 +37,9 @@ const DateTimeBox = ({
     showTime = false,
     dateInput,
     timeInput,
-    state = { isValid: true, isFocused: false, isActive: true },
+    state = DEFAULT_BOX_STATE,
     onBoxFocus,
+    children,
 }: DateTimeBoxProps) => {
     if (process.env.NODE_ENV === 'development' && showTime && !timeInput) {
         console.warn('timeInput is required when showTime is true');
@@ -56,8 +58,8 @@ const DateTimeBox = ({
     };
 
     const getStateClassName = () => {
-        const { isValid, isFocused, isActive } = state;
-        const prefix = isValid ? 'valid' : 'invalid';
+        const { isFocused, isActive } = state;
+        const prefix = isBoxValid(state) ? 'valid' : 'invalid';
         const suffix = isFocused ? 'focused' : isActive ? 'active' : 'inactive';
         return `${prefix}-${suffix}` as keyof typeof containerStyles.states;
     };
@@ -69,7 +71,7 @@ const DateTimeBox = ({
         <div className={`${containerClasses} ${className}`}>
             <div className="flex h-[30px] items-center py-[4px]">
                 <input
-                    className={`${inputClasses} ${showTime ? 'w-1/2' : 'w-full'} px-[8px]`}
+                    className={`${inputClasses} px-[8px] ${showTime ? 'min-w-0 flex-[2]' : children ? 'min-w-0 flex-1' : 'w-full'}`}
                     type="text"
                     placeholder={dateInput.placeholder}
                     value={dateInput.value}
@@ -81,20 +83,21 @@ const DateTimeBox = ({
                 />
                 {showTime && timeInput && (
                     <>
-                        <div className="bg-grey-20 mx-[4px] h-[14px] w-px" />
+                        <div className="bg-grey-20 mx-[4px] h-[14px] w-px flex-shrink-0" />
                         <input
-                            className={`${inputClasses} w-1/2 px-[20px]`}
+                            className={`${inputClasses} min-w-0 flex-1 px-[20px]`}
                             type="text"
-                            placeholder={timeInput.placeholder}
-                            value={timeInput.value}
-                            onChange={(e) => timeInput.onChange?.(e.target.value)}
-                            onKeyDown={(e) => timeInput.onKeyDown?.(e)}
+                            placeholder={timeInput?.placeholder}
+                            value={timeInput?.value}
+                            onChange={(e) => timeInput?.onChange?.(e.target.value)}
+                            onKeyDown={(e) => timeInput?.onKeyDown?.(e)}
                             onFocus={() => onBoxFocus?.()}
-                            onBlur={() => timeInput.onBlur?.()}
-                            ref={timeInput.ref}
+                            onBlur={() => timeInput?.onBlur?.()}
+                            ref={timeInput?.ref}
                         />
                     </>
                 )}
+                {children && <div className="flex shrink-0 items-center">{children}</div>}
             </div>
         </div>
     );

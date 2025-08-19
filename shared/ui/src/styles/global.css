@@ -5,37 +5,10 @@
 
 @font-face {
     font-family: 'pretendard';
-    font-weight: 900;
-    font-display: swap;
-    src:
-        local('Pretendard Black'),
-        url('https://external-client.its-newid.net/font/Pretendard-Black.subset.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'pretendard';
-    font-weight: 800;
-    font-display: swap;
-    src:
-        local('Pretendard ExtraBold'),
-        url('https://external-client.its-newid.net/font/Pretendard-ExtraBold.subset.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'pretendard';
     font-weight: 700;
     font-display: swap;
     src:
         local('pretendard Bold'),
-        url('https://external-client.its-newid.net/font/Pretendard-Bold.subset.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'pretendard';
-    font-weight: 600;
-    font-display: swap;
-    src:
-        local('Pretendard SemiBold'),
         url('https://external-client.its-newid.net/font/Pretendard-SemiBold.subset.woff2') format('woff2');
 }
 
@@ -45,7 +18,7 @@
     font-display: swap;
     src:
         local('Pretendard Medium'),
-        url('https://external-client.its-newid.net/font/Pretendard-Medium.subset.woff2') format('woff2');
+        url('https://external-client.its-newid.net/font/Pretendard-Regular.subset.woff2') format('woff2');
 }
 
 @font-face {
@@ -54,7 +27,7 @@
     font-display: swap;
     src:
         local('Pretendard Regular'),
-        url('https://external-client.its-newid.net/font/Pretendard-Regular.subset.woff2') format('woff2');
+        url('https://external-client.its-newid.net/font/Pretendard-Light.subset.woff2') format('woff2');
 }
 
 @font-face {
@@ -63,25 +36,7 @@
     font-display: swap;
     src:
         local('Pretendard Light'),
-        url('https://external-client.its-newid.net/font/Pretendard-Light.subset.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'pretendard';
-    font-weight: 200;
-    font-display: swap;
-    src:
-        local('Pretendard ExtraLight'),
         url('https://external-client.its-newid.net/font/Pretendard-ExtraLight.subset.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'pretendard';
-    font-weight: 100;
-    font-display: swap;
-    src:
-        local('Pretendard Thin'),
-        url('https://external-client.its-newid.net/font/Pretendard-Thin.subset.woff2') format('woff2');
 }
 
 @layer components {
@@ -158,11 +113,6 @@
         font-weight: 400;
         line-height: 14px;
     }
-    .text-sb12 {
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 14px;
-    }
 }
 
 @layer utilities {
@@ -176,7 +126,6 @@
     .scrollbar::-webkit-scrollbar-track {
         background: transparent;
     }
-
     .scrollbar::-webkit-scrollbar-thumb {
         background-color: #cbcbcd;
         border-radius: 6px;

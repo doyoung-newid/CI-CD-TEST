@@ -1,11 +1,16 @@
-import { format, getHours, getMinutes, isValid, parse } from 'date-fns';
-import { DEFAULT_TIME_STATE, ParsedDate, ParsedTime, ParsedValue } from '@/components/datepicker/DatePicker.types.ts';
+import { differenceInDays, format, getHours, getMinutes, isValid, parse } from 'date-fns';
+import { DEFAULT_TIME_STATE, ParsedDate, ParsedTime, ParsedValue } from '@/components/datepicker/DatePicker.types';
 
 export const isInvalidValue = <T>(value: ParsedValue<T> | undefined): boolean => {
     return !value?.parsedValue || (!!value.currentValue.trim() && !value.parsedValue);
 };
 
 export const isEmptyValue = <T>(value: ParsedValue<T>) => !value.parsedValue && !value.currentValue.trim();
+
+export const isWithinDays = (startDate: Date, endDate: Date, maxDays: number): boolean => {
+    const daysBetween = differenceInDays(endDate, startDate) + 1;
+    return daysBetween <= maxDays;
+};
 
 export const combineDateTime = (date: Date, hours: number, minutes: number): Date => {
     const newDate = new Date(date);

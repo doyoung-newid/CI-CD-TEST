@@ -1,9 +1,7 @@
-import React, { useCallback } from 'react';
-import { BoxComponentStyles, Size } from '@/types/common.ts';
-import useModSelectBox from '@/components/selectbox/ModSelectBox.hooks.ts';
-import DropdownList, { SelectOption } from '@/components/selectbox/DropdownList.tsx';
+import { BoxComponentStyles, Size } from '@/types/common';
+import useModSelectBox from '@/components/selectbox/ModSelectBox.hooks';
+import { DropdownList, SelectOption } from '@/components/selectbox/DropdownList';
 import DropdownIcon from '@/assets/icDropdownArrow.svg?react';
-import IconReset from '@/assets/icReset.svg?react';
 
 export interface ModSelectBoxProps {
     size?: Size;
@@ -30,24 +28,19 @@ const ModSelectBox = ({
     disabled = false,
     className = '',
 }: ModSelectBoxProps) => {
-    const { containerRef, isFocused, selectedItem, isModified, toggleDropdown, handleSelected, resetToOrigin } =
-        useModSelectBox({
-            initialValue: value,
-            onChange,
-            onEnter,
-            onEscape,
-        });
+    const { containerRef, isFocused, selectedItem, toggleDropdown, handleSelected } = useModSelectBox({
+        initialValue: value,
+        onChange,
+        onEnter,
+        onEscape,
+    });
 
     const { textSizeClass, heightClass, iconSizeClass } = BoxComponentStyles[size];
     const containerWidth = { width: width > 0 ? `${width}px` : '100%' };
 
-    let stateClass = isFocused
-        ? 'border-blue-500 bg-white'
-        : isModified
-          ? 'border-transparent bg-blue-150 hover:border-grey-40'
-          : 'border-transparent hover:border-grey-40';
+    let stateClass = isFocused ? 'border-blue-500 bg-white' : 'border-transparent hover:border-grey-40';
 
-    let inputTextClass = isModified && !isFocused ? 'text-blue-600 font-[700]' : `text-grey-90 ${textSizeClass}`;
+    let inputTextClass = `text-grey-90 ${textSizeClass}`;
 
     if (disabled) {
         stateClass = 'border-transparent bg-grey-20';
@@ -56,10 +49,6 @@ const ModSelectBox = ({
 
     const rotation = isFocused ? 'rotate-180' : 'rotate-0';
     const cursor = disabled ? '' : 'cursor-pointer';
-
-    const handleClearMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-    }, []);
 
     return (
         <div
@@ -78,24 +67,11 @@ const ModSelectBox = ({
                     disabled={disabled}
                     className={`h-full w-full cursor-pointer ${inputTextClass}`}
                 />
-                {isModified && !isFocused && !disabled ? (
-                    <button
-                        className="size-[20px]"
-                        onMouseDown={handleClearMouseDown}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            resetToOrigin();
-                        }}
-                    >
-                        <IconReset />
-                    </button>
-                ) : (
-                    <div className={`${iconSizeClass}`}>
-                        <DropdownIcon
-                            className={`${iconSizeClass} ${rotation} text-grey-50 transition-transform duration-100`}
-                        />
-                    </div>
-                )}
+                <div className={`${iconSizeClass}`}>
+                    <DropdownIcon
+                        className={`${iconSizeClass} ${rotation} text-grey-50 transition-transform duration-100`}
+                    />
+                </div>
             </div>
             <DropdownList size={size} isFocused={isFocused} optionList={optionList} onSelected={handleSelected} />
         </div>

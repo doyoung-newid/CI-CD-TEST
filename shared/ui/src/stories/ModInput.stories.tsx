@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ModInput } from '@/components/textfield/ModInput.tsx';
+import { ModInput } from '@/components/textfield/ModInput';
 
 const meta: Meta<typeof ModInput> = {
     title: 'Shared/TextField/ModInput',

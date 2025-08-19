@@ -1,6 +1,6 @@
-import { LabelPosition, Size } from '@/types/common.ts';
-import useTextField from '@/components/textfield/textInput.hooks.ts';
-import { LabeledInput } from '@/components/textfield/LabeledInput.tsx';
+import { LabelPosition, Size } from '@/types/common';
+import useTextField from '@/components/textfield/textInput.hooks';
+import { LabeledInput } from '@/components/textfield/LabeledInput';
 
 type TextInputSize = Extract<Size, 'medium' | 'large'>;
 
@@ -28,7 +28,7 @@ const TextInput = ({
     value: initialValue = '',
     label = '',
     labelColor = '',
-    labelPosition = 'outer',
+    labelPosition = 'none',
     supportingText = '',
     supportingTextColor = '',
     disabled = false,

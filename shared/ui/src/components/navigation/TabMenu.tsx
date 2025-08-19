@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SelectOption } from '@/components/selectbox/DropdownList.tsx';
+import { SelectOption } from '@/components/selectbox/DropdownList';
 
 interface Props {
     tabList: SelectOption[];
@@ -9,7 +9,7 @@ interface Props {
 
 function TabMenu({ tabList, value, onChange }: Props) {
     const [selected, setSelected] = useState(value);
-    const activeStyles = `text-blue-600 border-blue-600 hover:bg-blue-100`;
+    const activeStyles = `text-blue-600 border-blue-600 hover:bg-grey-10`;
     const inactiveStyles = `text-grey-90 border-transparent hover:bg-grey-10`;
 
     return (

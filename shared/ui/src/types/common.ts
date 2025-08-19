@@ -3,7 +3,7 @@ import React, { JSX } from 'react';
 export type CustomComponentProps<T extends keyof JSX.IntrinsicElements> = Omit<React.ComponentProps<T>, 'className'>;
 
 export type Size = 'small' | 'medium' | 'large';
-export type LabelPosition = 'inner' | 'outer';
+export type LabelPosition = 'inner' | 'outer' | 'none';
 
 export const BoxComponentStyles: Record<
     Size,

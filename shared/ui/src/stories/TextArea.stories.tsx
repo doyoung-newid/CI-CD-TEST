@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { TextArea } from '@/components/textfield/TextArea.tsx';
+import { TextArea } from '@/components/textfield/TextArea';
 
 const meta: Meta<typeof TextArea> = {
     title: 'Shared/TextField/TextArea',

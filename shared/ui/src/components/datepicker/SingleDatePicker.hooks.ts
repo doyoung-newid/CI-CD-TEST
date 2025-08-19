@@ -5,32 +5,47 @@ import {
     formatDate,
     formatTime,
     isEmptyValue,
+    isInvalidValue,
     validateDate,
     validateTime,
-} from '@/components/datepicker/DatePicker.utils.ts';
-import { SingleDatePickerProps } from '@/components/datepicker/SingleDatePicker.tsx';
+} from '@/components/datepicker/DatePicker.utils';
+import { SingleDatePickerProps } from '@/components/datepicker/SingleDatePicker';
 import {
     BoxState,
+    DEFAULT_BOX_STATE,
     DEFAULT_DATE_STATE,
     DEFAULT_TIME_STATE,
+    INVALID_TIME_STATE,
+    isBoxValid,
     ParsedDate,
     ParsedTime,
-} from '@/components/datepicker/DatePicker.types.ts';
+    VALID_STATE,
+    ValidationState,
+} from '@/components/datepicker/DatePicker.types';
 
-type Props = Pick<SingleDatePickerProps, 'showTime' | 'isOpen' | 'value' | 'onChange' | 'onClose'>;
+type Props = Pick<
+    SingleDatePickerProps,
+    'showTime' | 'isOpen' | 'value' | 'onChange' | 'onClose' | 'disabledCondition'
+>;
 
-const DEFAULT_BOX_STATE = {
-    isValid: true,
-    isFocused: false,
-    isActive: true,
-};
+export const INVALID_DATE_STATE = {
+    status: 'invalid',
+    error: 'invalidDate',
+} as const;
 
-export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, onChange, onClose }: Props) => {
+export const useSingleDatePicker = ({
+    showTime = false,
+    isOpen = false,
+    value,
+    disabledCondition,
+    onChange,
+    onClose,
+}: Props) => {
     // input refs
     const dateInputRef = useRef<HTMLInputElement>(null);
     const timeInputRef = useRef<HTMLInputElement>(null);
 
-    const [boxState, setBoxState] = useState<BoxState>(DEFAULT_BOX_STATE);
+    const [boxState, setBoxState] = useState<BoxState<'single'>>(DEFAULT_BOX_STATE);
 
     // input values
     const [dateState, setDateState] = useState<ParsedDate>({
@@ -56,12 +71,47 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
 
+    const isDisabled = useCallback((date: Date) => !!disabledCondition?.(date), [disabledCondition]);
+
     const updateDateWithTime = (date?: Date, time?: { hours: number; minutes: number }): Date | undefined => {
         if (!date) return undefined;
         if (!showTime) return date;
 
         return combineDateTime(date, time?.hours || 0, time?.minutes || 0);
     };
+
+    const validate = useCallback(
+        (inputDateState?: ParsedDate, inputTimeState?: ParsedTime): ValidationState<'single'> => {
+            const currentDateState = inputDateState || dateState;
+            const currentTimeState = inputTimeState || timeState;
+
+            if (!currentDateState || !currentTimeState) {
+                return INVALID_DATE_STATE;
+            }
+
+            // 빈 값인 경우 유효함
+            if (isEmptyValue(currentDateState) && (!showTime || isEmptyValue(currentTimeState))) {
+                return VALID_STATE;
+            }
+
+            // 날짜 파싱 실패한 경우
+            if (isInvalidValue(currentDateState)) {
+                return INVALID_DATE_STATE;
+            }
+
+            // 비활성화된 날짜인 경우
+            if (isDisabled(startOfDay(currentDateState.parsedValue!))) {
+                return INVALID_DATE_STATE;
+            }
+
+            if (showTime && isInvalidValue(currentTimeState)) {
+                return INVALID_TIME_STATE;
+            }
+
+            return VALID_STATE;
+        },
+        [dateState, timeState, isDisabled, showTime],
+    );
 
     const initFocusState = () => {
         setBoxState((prev) => ({
@@ -77,7 +127,7 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
         }));
 
         // 유효한 날짜가 있으면 해당 월로 이동
-        if (boxState.isValid && dateState.parsedValue) {
+        if (isBoxValid(boxState) && dateState.parsedValue) {
             if (!isSameMonth(dateState.parsedValue, month)) {
                 setMonth(dateState.parsedValue);
             }
@@ -89,7 +139,7 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
             initFocusState();
 
             const dateToUse = selectedValue || dateState.parsedValue;
-            if (!dateToUse) return;
+            if (!dateToUse || isDisabled(startOfDay(dateToUse))) return;
 
             if (selectedValue) {
                 setSelectedDate(selectedValue);
@@ -100,14 +150,23 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
             }
 
             setMonth(dateToUse);
+
+            const validation = validate(
+                selectedValue ? { parsedValue: selectedValue, currentValue: formatDate(selectedValue) } : dateState,
+                timeState,
+            );
+            const isValid = validation.status === 'valid';
+
             setBoxState((prev) => ({
                 ...prev,
-                isValid: true,
+                validation,
             }));
 
-            onChange?.(updateDateWithTime(dateToUse, timeState.parsedValue));
+            if (isValid) {
+                onChange?.(updateDateWithTime(dateToUse, timeState.parsedValue));
+            }
         },
-        [dateState.parsedValue, onChange, timeState.parsedValue, updateDateWithTime],
+        [dateState, isDisabled, onChange, timeState, updateDateWithTime, validate],
     );
 
     const handleDateChange = useCallback((value: string) => {
@@ -130,12 +189,14 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
 
             const { parsedValue: parsedDate } = newDateState;
             const { parsedValue: parsedTime } = timeState;
-            const isValid = !!parsedDate;
+
+            const validation = validate(newDateState, timeState);
+            const isValid = validation.status === 'valid';
 
             setDateState(newDateState);
             setBoxState((prev) => ({
                 ...prev,
-                isValid,
+                validation,
                 isFocused: isEditDone ? !isValid : false,
             }));
 
@@ -143,16 +204,18 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
 
             dateInputRef.current?.blur();
 
-            setSelectedDate(parsedDate);
-            setMonth(parsedDate);
+            if (parsedDate) {
+                setSelectedDate(parsedDate);
+                setMonth(parsedDate);
 
-            if (showTime && parsedTime) {
-                onChange?.(updateDateWithTime(parsedDate, parsedTime));
-            } else {
-                onChange?.(parsedDate);
+                if (showTime && parsedTime) {
+                    onChange?.(updateDateWithTime(parsedDate, parsedTime));
+                } else {
+                    onChange?.(parsedDate);
+                }
             }
         },
-        [dateState, value, showTime, timeState, updateDateWithTime, onChange],
+        [dateState, timeState, validate, value, showTime, onChange, updateDateWithTime],
     );
 
     const handleDateKeyDown = useCallback(
@@ -188,23 +251,25 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
                     };
                 }
             } else {
-                const validation = validateTime(timeState.currentValue);
-                newTimeState = validation.parsedValue
+                const validationTime = validateTime(timeState.currentValue);
+                newTimeState = validationTime.parsedValue
                     ? {
-                          ...validation,
-                          currentValue: formatTime(validation.parsedValue),
+                          ...validationTime,
+                          currentValue: formatTime(validationTime.parsedValue),
                       }
-                    : validation;
+                    : validationTime;
             }
 
             const { parsedValue: parsedTime } = newTimeState;
             const { parsedValue: parsedDate } = dateState;
-            const isValid = !!parsedTime;
+
+            const validationState = validate(dateState, newTimeState);
+            const isValid = validationState.status === 'valid';
 
             setTimeState(newTimeState);
             setBoxState((prev) => ({
                 ...prev,
-                isValid,
+                validation: validationState,
                 isFocused: isEditDone ? !isValid : false,
             }));
 
@@ -216,7 +281,7 @@ export const useSingleDatePicker = ({ showTime = false, isOpen = false, value, o
                 onChange?.(updateDateWithTime(parsedDate, parsedTime));
             }
         },
-        [showTime, timeState, dateState, value, onChange, updateDateWithTime],
+        [showTime, timeState, dateState, validate, value, onChange, updateDateWithTime],
     );
 
     const handleTimeKeyDown = useCallback(

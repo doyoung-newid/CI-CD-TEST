@@ -1,6 +1,6 @@
-import { useInput } from '@/hooks/useInput.ts';
+import { useInput } from '@/hooks/useInput';
 import React from 'react';
-import { BoxComponentStyles, Size } from '@/types/common.ts';
+import { BoxComponentStyles, Size } from '@/types/common';
 
 type TextAreaSize = Extract<Size, 'medium' | 'large'>;
 

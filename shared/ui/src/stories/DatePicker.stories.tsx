@@ -1,9 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { startOfDay } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
-import { SingleDatePickerBox } from '@/index.ts';
+import { SingleDatePickerBox } from '@/index';
 import React, { useEffect, useState } from 'react';
-import { DEFAULT_BUTTON_TEXT_GROUP } from '@/components/datepicker/DatePicker.types.ts';
+import { DEFAULT_BUTTON_TEXT_GROUP } from '@/components/datepicker/DatePicker.types';
+import { SINGLE_VALIDATION_MESSAGES } from '@/components/datepicker/SingleDatePicker';
 
 const LOCALES = {
     ko,
@@ -75,6 +76,19 @@ const meta: Meta<typeof SingleDatePickerBox> = {
                 type: { summary: 'Date' },
             },
         },
+        disabledCondition: {
+            description: '선택할 수 없는 날짜 조건',
+            table: {
+                type: {
+                    summary: '(date: Date) => boolean',
+                },
+            },
+        },
+        validationMessages: {
+            table: {
+                disable: true,
+            },
+        },
     },
 };
 
@@ -84,7 +98,7 @@ type Story = StoryObj<typeof SingleDatePickerBox>;
 
 const Example = (args: Omit<React.ComponentProps<typeof SingleDatePickerBox>, 'onChange'>) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { buttonText, value, ...rest } = args;
+    const { buttonText, value, validationMessages, ...rest } = args;
 
     const buttonTextGroup =
         args.locale === LOCALES.ko
@@ -93,6 +107,14 @@ const Example = (args: Omit<React.ComponentProps<typeof SingleDatePickerBox>, 'o
                   today: '오늘',
               }
             : DEFAULT_BUTTON_TEXT_GROUP;
+
+    const validationMessagesGroup =
+        args.locale === LOCALES.ko
+            ? {
+                  invalidDate: '유효하지 않은 날짜',
+                  invalidTime: '유효하지 않은 시간',
+              }
+            : SINGLE_VALIDATION_MESSAGES;
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
 
@@ -104,7 +126,13 @@ const Example = (args: Omit<React.ComponentProps<typeof SingleDatePickerBox>, 'o
     }, [args.value]);
 
     return (
-        <SingleDatePickerBox value={selectedDate} onChange={setSelectedDate} buttonText={buttonTextGroup} {...rest} />
+        <SingleDatePickerBox
+            value={selectedDate}
+            onChange={setSelectedDate}
+            buttonText={buttonTextGroup}
+            validationMessages={validationMessagesGroup}
+            {...rest}
+        />
     );
 };
 
@@ -116,5 +144,21 @@ export const Default: Story = {
         value: startOfDay(new Date()),
         placeholder: '',
         width: 200,
+        disabledCondition: () => false,
+    },
+};
+
+export const WithDisabledDates: Story = {
+    render: (args) => <Example {...args} />,
+    args: {
+        showTime: true,
+        locale: ko,
+        value: startOfDay(new Date()),
+        placeholder: '날짜를 선택하세요',
+        width: 200,
+        disabledCondition: (date: Date) => {
+            const today = startOfDay(new Date());
+            return date < today;
+        },
     },
 };

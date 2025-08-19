@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectOption } from '@/components/selectbox/DropdownList.tsx';
-import { ModSelectBox, ModSelectBoxProps } from '@/components/selectbox/ModSelectBox.tsx';
+import { SelectOption } from '@/components/selectbox/DropdownList';
+import { ModSelectBox, ModSelectBoxProps } from '@/components/selectbox/ModSelectBox';
 
 const sizes = ['small', 'medium'] as const;
 

@@ -1,24 +1,57 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { getHours, getMinutes, isAfter, isBefore, isSameDay, isSameMonth, startOfDay } from 'date-fns';
-import { BoxType, DateRangePickerProps } from '@/components/datepicker/DateRangePicker.tsx';
+import {
+    differenceInDays,
+    getHours,
+    getMinutes,
+    isAfter,
+    isBefore,
+    isSameDay,
+    isSameMonth,
+    startOfDay,
+} from 'date-fns';
+import { BoxType, DateRangePickerProps } from '@/components/datepicker/DateRangePicker';
 import {
     combineDateTime,
     formatDate,
     formatTime,
     isEmptyValue,
     isInvalidValue,
+    isWithinDays,
     validateDate,
     validateTime,
-} from '@/components/datepicker/DatePicker.utils.ts';
-import { ParsedDate, ParsedTime } from '@/components/datepicker/DatePicker.types.tsx';
-import { BoxState, DEFAULT_DATE_STATE, DEFAULT_TIME_STATE } from '@/components/datepicker/DatePicker.types.ts';
+} from '@/components/datepicker/DatePicker.utils';
+import {
+    ParsedDate,
+    ParsedTime,
+    BoxState,
+    DEFAULT_BOX_STATE,
+    DEFAULT_DATE_STATE,
+    DEFAULT_TIME_STATE,
+    INVALID_TIME_STATE,
+    isBoxValid,
+    VALID_STATE,
+    ValidationState,
+} from '@/components/datepicker/DatePicker.types';
 
-type Props = Pick<DateRangePickerProps, 'showTime' | 'isOpen' | 'startValue' | 'endValue' | 'onChange' | 'onClose'>;
+type Props = Pick<
+    DateRangePickerProps,
+    'showTime' | 'isOpen' | 'startValue' | 'endValue' | 'onChange' | 'onClose' | 'disabledCondition' | 'maxDays'
+>;
 
-const DEFAULT_BOX_STATE = {
-    start: { isValid: true, isFocused: false, isActive: true },
-    end: { isValid: true, isFocused: false, isActive: false },
+export const INVALID_RANGE_STATE = {
+    status: 'invalid',
+    error: 'invalidRange',
+} as const;
+
+export const INVALID_MAX_DAYS_STATE = {
+    status: 'invalid',
+    error: 'exceedingMaxDays',
+} as const;
+
+const DEFAULT_RANGE_BOX_STATE = {
+    start: DEFAULT_BOX_STATE,
+    end: { ...DEFAULT_BOX_STATE, isActive: false },
 };
 
 export const useDateRangePicker = ({
@@ -26,8 +59,10 @@ export const useDateRangePicker = ({
     isOpen = false,
     startValue,
     endValue,
+    disabledCondition,
     onChange,
     onClose,
+    maxDays,
 }: Props) => {
     // input refs
     const startDateInputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +70,7 @@ export const useDateRangePicker = ({
     const endDateInputRef = useRef<HTMLInputElement>(null);
     const endTimeInputRef = useRef<HTMLInputElement>(null);
 
-    const [boxState, setBoxState] = useState<Record<BoxType, BoxState>>(DEFAULT_BOX_STATE);
+    const [boxState, setBoxState] = useState<Record<BoxType, BoxState<'range'>>>(DEFAULT_RANGE_BOX_STATE);
 
     // input values
     const [startDate, setStartDate] = useState<ParsedDate>({
@@ -80,12 +115,17 @@ export const useDateRangePicker = ({
         to: endValue,
     });
 
-    const updateDateWithTime = (date?: Date, time?: { hours: number; minutes: number }): Date | undefined => {
-        if (!date) return undefined;
-        if (!showTime) return date;
+    const isDisabled = useCallback((date: Date) => !!disabledCondition?.(date), [disabledCondition]);
 
-        return combineDateTime(date, time?.hours || 0, time?.minutes || 0);
-    };
+    const updateDateWithTime = useCallback(
+        (date?: Date, time?: { hours: number; minutes: number }): Date | undefined => {
+            if (!date) return undefined;
+            if (!showTime) return date;
+
+            return combineDateTime(date, time?.hours || 0, time?.minutes || 0);
+        },
+        [showTime],
+    );
 
     const validate = useCallback(
         (
@@ -93,7 +133,7 @@ export const useDateRangePicker = ({
             startTimeState?: ParsedTime,
             endDateState?: ParsedDate,
             endTimeState?: ParsedTime,
-        ): boolean => {
+        ): ValidationState<'range'> => {
             const currentStartDate = startDateState || startDate;
             const currentStartTime = startTimeState || startTime;
             const currentEndDate = endDateState || endDate;
@@ -102,19 +142,38 @@ export const useDateRangePicker = ({
             const isDatesEmpty = isEmptyValue(currentStartDate) && isEmptyValue(currentEndDate);
             const isTimesEmpty = isEmptyValue(currentStartTime) && isEmptyValue(currentEndTime);
 
+            // 빈 값인 경우 유효함
             if (isDatesEmpty && (!showTime || isTimesEmpty)) {
-                return true;
+                return VALID_STATE;
             }
 
-            if (isInvalidValue(currentStartDate) || isInvalidValue(currentEndDate)) return false;
+            // 날짜 파싱 실패한 경우
+            if (isInvalidValue(currentStartDate) || isInvalidValue(currentEndDate)) {
+                return INVALID_RANGE_STATE;
+            }
 
             const parsedStartDate = currentStartDate.parsedValue!;
             const parsedEndDate = currentEndDate.parsedValue!;
 
-            if (isAfter(startOfDay(parsedStartDate), startOfDay(parsedEndDate))) return false;
+            // 시작일이 종료일보다 늦은 경우
+            if (isAfter(startOfDay(parsedStartDate), startOfDay(parsedEndDate))) {
+                return INVALID_RANGE_STATE;
+            }
+
+            // 비활성화된 날짜인 경우
+            if (isDisabled(startOfDay(parsedStartDate)) || isDisabled(startOfDay(parsedEndDate))) {
+                return INVALID_RANGE_STATE;
+            }
+
+            // 최대 선택 일자 제한된 경우
+            if (maxDays && !isWithinDays(parsedStartDate, parsedEndDate, maxDays)) {
+                return INVALID_MAX_DAYS_STATE;
+            }
 
             if (showTime) {
-                if (isInvalidValue(currentStartTime) || isInvalidValue(currentEndTime)) return false;
+                if (isInvalidValue(currentStartTime) || isInvalidValue(currentEndTime)) {
+                    return INVALID_TIME_STATE;
+                }
 
                 const parsedStartTime = currentStartTime.parsedValue!;
                 const parsedEndTime = currentEndTime.parsedValue!;
@@ -127,13 +186,15 @@ export const useDateRangePicker = ({
                     );
                     const endDateTime = combineDateTime(parsedEndDate, parsedEndTime.hours, parsedEndTime.minutes);
 
-                    if (isAfter(startDateTime, endDateTime)) return false;
+                    if (isAfter(startDateTime, endDateTime)) {
+                        return INVALID_TIME_STATE;
+                    }
                 }
             }
 
-            return true;
+            return VALID_STATE;
         },
-        [endDate, endTime, showTime, startDate, startTime],
+        [endDate, endTime, showTime, startDate, startTime, isDisabled, maxDays],
     );
 
     const initFocusState = () => {
@@ -167,7 +228,7 @@ export const useDateRangePicker = ({
             }));
 
             const targetDate = isStart ? startDate.parsedValue : endDate.parsedValue;
-            const isValidBox = isStart ? boxState.start.isValid : boxState.end.isValid;
+            const isValidBox = isStart ? isBoxValid(boxState.start) : isBoxValid(boxState.end);
 
             if (targetDate && isValidBox) {
                 if (!isSameMonth(targetDate, month)) {
@@ -196,10 +257,20 @@ export const useDateRangePicker = ({
             let newEndDate = endDate;
             let newEndTime = endTime;
 
-            const shouldUpdateEndDate = endDate.parsedValue
+            // 시작일이 종료일보다 뒤에 오는 경우
+            const isStartAfterEnd = endDate.parsedValue
                 ? isBefore(startOfDay(endDate.parsedValue), startOfDay(selectedDate))
                 : Boolean(endDate.currentValue?.trim());
 
+            // 최대 지정 가능 기간 확인
+            const isExceedingMaxDays =
+                endDate.parsedValue && maxDays
+                    ? differenceInDays(endDate.parsedValue, selectedDate) + 1 > maxDays
+                    : false;
+
+            const shouldUpdateEndDate = isStartAfterEnd || isExceedingMaxDays;
+
+            // 종료일을 시작일과 같게 변경
             if (shouldUpdateEndDate) {
                 newEndDate = {
                     parsedValue: selectedDate,
@@ -220,22 +291,23 @@ export const useDateRangePicker = ({
                 setEndTime(newEndTime);
             }
 
-            const isBoxValid = validate(newStartDate, newStartTime, newEndDate, newEndTime);
+            const validation = validate(newStartDate, newStartTime, newEndDate, newEndTime);
+            const isValid = validation.status === 'valid';
 
             setBoxState((prev) => ({
                 start: {
-                    isValid: isBoxValid,
-                    isActive: !isBoxValid,
+                    validation,
+                    isActive: !isValid,
                     isFocused: false,
                 },
                 end: {
                     ...prev.end,
-                    isValid: isBoxValid,
-                    isActive: isBoxValid,
+                    validation,
+                    isActive: isValid,
                 },
             }));
 
-            if (!isBoxValid) return;
+            if (!isValid) return;
 
             const targetDate = newEndDate.parsedValue;
             if (targetDate && !isSameMonth(targetDate, month)) {
@@ -249,7 +321,7 @@ export const useDateRangePicker = ({
             setRange(newRange);
             onChange?.(newRange);
         },
-        [validate, endDate, endTime, month, onChange, showTime, startTime, updateDateWithTime],
+        [startTime, showTime, endDate, endTime, maxDays, validate, month, updateDateWithTime, onChange],
     );
 
     const handleSelectEndDate = useCallback(
@@ -270,10 +342,20 @@ export const useDateRangePicker = ({
             let newStartDate = startDate;
             let newStartTime = startTime;
 
-            const shouldUpdateEndDate = startDate.parsedValue
+            // 종료일이 시작일보다 앞에 오는 경우
+            const isEndBeforeStart = startDate.parsedValue
                 ? isAfter(startOfDay(startDate.parsedValue), startOfDay(selectedDate))
                 : Boolean(startDate.currentValue?.trim());
 
+            // 최대 지정 가능 기간 확인
+            const isExceedingMaxDays =
+                startDate.parsedValue && maxDays
+                    ? differenceInDays(selectedDate, startDate.parsedValue) + 1 > maxDays
+                    : false;
+
+            const shouldUpdateEndDate = isEndBeforeStart || isExceedingMaxDays;
+
+            // 시작일을 종료일과 같게 변경
             if (shouldUpdateEndDate) {
                 newStartDate = {
                     parsedValue: selectedDate,
@@ -295,21 +377,22 @@ export const useDateRangePicker = ({
                 setEndTime(newEndTime);
             }
 
-            const isBoxValid = validate(newStartDate, newStartTime, newEndDate, newEndTime);
+            const validation = validate(newStartDate, newStartTime, newEndDate, newEndTime);
+            const isValid = validation.status === 'valid';
 
             setBoxState((prev) => ({
                 start: {
                     ...prev.start,
-                    isValid: isBoxValid,
+                    validation,
                 },
                 end: {
                     ...prev.end,
-                    isValid: isBoxValid,
+                    validation,
                     isFocused: false,
                 },
             }));
 
-            if (!isBoxValid) return;
+            if (!isValid) return;
 
             const targetDate = newEndDate.parsedValue;
             if (targetDate && !isSameMonth(targetDate, month)) {
@@ -323,7 +406,7 @@ export const useDateRangePicker = ({
             setRange(newRange);
             onChange?.(newRange);
         },
-        [validate, endTime, boxState, onChange, showTime, startDate, startTime, month],
+        [endTime, showTime, startDate, startTime, maxDays, validate, month, updateDateWithTime, onChange],
     );
 
     const handleSelectRange = useCallback(
@@ -427,20 +510,21 @@ export const useDateRangePicker = ({
             }
         }
 
-        const isBoxValid = validate(newStartDate, startTime, newEndDate, endTime);
+        const validation = validate(newStartDate, startTime, newEndDate, endTime);
+        const isValid = validation.status === 'valid';
 
         if (isStart) {
             setStartDate(newStartDate);
             setBoxState({
                 start: {
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? !isBoxValid : false,
-                    isActive: isEditDone ? !isBoxValid : true,
+                    validation,
+                    isFocused: isEditDone ? !isValid : false,
+                    isActive: isEditDone ? !isValid : true,
                 },
                 end: {
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? isBoxValid : false,
-                    isActive: isEditDone ? isBoxValid : false,
+                    validation,
+                    isFocused: isEditDone ? isValid : false,
+                    isActive: isEditDone ? isValid : false,
                 },
             });
         } else {
@@ -448,17 +532,17 @@ export const useDateRangePicker = ({
             setBoxState((prev) => ({
                 start: {
                     ...prev.start,
-                    isValid: isBoxValid,
+                    validation,
                 },
                 end: {
                     ...prev.end,
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? !isBoxValid : false,
+                    validation,
+                    isFocused: isEditDone ? !isValid : false,
                 },
             }));
         }
 
-        if (!isBoxValid) return;
+        if (!isValid) return;
 
         if (isStart) {
             startDateInputRef.current?.blur();
@@ -542,20 +626,21 @@ export const useDateRangePicker = ({
             }
         }
 
-        const isBoxValid = validate(startDate, newStartTime, endDate, newEndTime);
+        const validation = validate(startDate, newStartTime, endDate, newEndTime);
+        const isValid = validation.status === 'valid';
 
         if (isStart) {
             setStartTime(newStartTime);
             setBoxState({
                 start: {
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? !isBoxValid : false,
-                    isActive: isEditDone ? !isBoxValid : true,
+                    validation,
+                    isFocused: isEditDone ? !isValid : false,
+                    isActive: isEditDone ? !isValid : true,
                 },
                 end: {
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? isBoxValid : false,
-                    isActive: isEditDone ? isBoxValid : false,
+                    validation,
+                    isFocused: isEditDone ? isValid : false,
+                    isActive: isEditDone ? isValid : false,
                 },
             });
         } else {
@@ -563,17 +648,17 @@ export const useDateRangePicker = ({
             setBoxState((prev) => ({
                 start: {
                     ...prev.start,
-                    isValid: isBoxValid,
+                    validation,
                 },
                 end: {
                     ...prev.end,
-                    isValid: isBoxValid,
-                    isFocused: isEditDone ? !isBoxValid : false,
+                    validation,
+                    isFocused: isEditDone ? !isValid : false,
                 },
             }));
         }
 
-        if (!isBoxValid) return;
+        if (!isValid) return;
 
         if (isStart) {
             startTimeInputRef.current?.blur();
@@ -598,7 +683,7 @@ export const useDateRangePicker = ({
     };
 
     const handleDeleteDate = useCallback(() => {
-        setBoxState(DEFAULT_BOX_STATE);
+        setBoxState(DEFAULT_RANGE_BOX_STATE);
 
         setStartDate(DEFAULT_DATE_STATE);
         setEndDate(DEFAULT_DATE_STATE);

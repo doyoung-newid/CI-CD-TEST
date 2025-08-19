@@ -1,9 +1,9 @@
-import { BoxComponentStyles, Size } from '@/types/common.ts';
+import { BoxComponentStyles, Size } from '@/types/common';
 import React, { useCallback } from 'react';
-import useSearchField from '@/components/textfield/searchInput.hooks.ts';
+import useSearchField from '@/components/textfield/searchInput.hooks';
 import IconSearch from '@/assets/icSearch.svg?react';
 import IconTextClear from '@/assets/icTextClear.svg?react';
-import InputBox from './InputBox.tsx';
+import InputBox from './InputBox';
 
 export interface SearchFieldProps {
     size?: Size;

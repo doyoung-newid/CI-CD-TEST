@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SideNavBar } from '@/components/navigation/SideNavBar.tsx';
-import { SideNavSection } from '@/components/navigation/sideNavBar.types.ts';
+import { SideNavBar } from '@/components/navigation/SideNavBar';
+import { SideNavSection } from '@/components/navigation/sideNavBar.types';
 
 const meta: Meta<typeof SideNavBar> = {
     title: 'Shared/SideNavBar',

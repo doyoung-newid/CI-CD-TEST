@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { useInput } from '@/hooks/useInput.ts';
+import { useInput } from '@/hooks/useInput';
 
 const useTextField = (initialValue?: string, onChange?: (value: string) => void, onDone?: (value: string) => void) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);

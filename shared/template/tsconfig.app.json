@@ -11,8 +11,10 @@
         "paths": {
             "@/*": ["src/*"],
             // shared path fixes can be required for the workspace
-            "@plitvice/ui": ["../../shared/ui/src"],
-            "@plitvice/ui/*": ["../../shared/ui/src/*"]
+            "@plitvice/util": ["../util/src"],
+            "@plitvice/util/*": ["../util/src/*"],
+            "@plitvice/ui": ["../ui/src"],
+            "@plitvice/ui/*": ["../ui/src/*"]
         },
 
         /* Bundler mode */
@@ -30,5 +32,6 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
     },
-    "include": ["src"]
+    "include": ["src"],
+    "references": [{ "path": "../util/tsconfig.app.json" }, { "path": "../ui/tsconfig.app.json" }]
 }

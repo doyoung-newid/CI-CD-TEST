@@ -1,9 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { addDays, startOfDay } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
-import { DateRange, DateRangePickerBox } from '@/index.ts';
+import { DateRange, DateRangePickerBox } from '@/index';
 import React, { useState } from 'react';
-import { DEFAULT_BUTTON_TEXT_GROUP } from '@/components/datepicker/DatePicker.types.ts';
+import { DEFAULT_BUTTON_TEXT_GROUP } from '@/components/datepicker/DatePicker.types';
+import { RANGE_VALIDATION_MESSAGES } from '@/components/datepicker/DateRangePicker';
 
 const LOCALES = {
     ko,
@@ -73,6 +74,25 @@ const meta: Meta<typeof DateRangePickerBox> = {
                 type: { summary: 'boolean' },
             },
         },
+        maxDays: {
+            description: '기간 허용 범위',
+            table: {
+                type: { summary: 'number | undefined' },
+            },
+        },
+        disabledCondition: {
+            description: '선택할 수 없는 날짜 조건',
+            table: {
+                type: {
+                    summary: '(date: Date) => boolean',
+                },
+            },
+        },
+        validationMessages: {
+            table: {
+                disable: true,
+            },
+        },
     },
 };
 
@@ -92,10 +112,24 @@ const Example = (args: Omit<React.ComponentProps<typeof DateRangePickerBox>, 'on
               }
             : DEFAULT_BUTTON_TEXT_GROUP;
 
+    const validationMessages =
+        args.locale === LOCALES.ko
+            ? {
+                  invalidRange: '유효하지 않은 범위',
+                  exceedingMaxDays: '최대 {maxDays}일 설정',
+              }
+            : RANGE_VALIDATION_MESSAGES;
+
     const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(value);
 
     return (
-        <DateRangePickerBox value={selectedRange} onChange={setSelectedRange} buttonText={buttonTextGroup} {...rest} />
+        <DateRangePickerBox
+            value={selectedRange}
+            onChange={setSelectedRange}
+            buttonText={buttonTextGroup}
+            validationMessages={validationMessages}
+            {...rest}
+        />
     );
 };
 
@@ -106,9 +140,27 @@ export const Default: Story = {
         locale: enUS,
         value: {
             from: startOfDay(new Date()),
-            to: startOfDay(addDays(startOfDay(new Date()), 7)),
+            to: startOfDay(addDays(startOfDay(new Date()), 5)),
         },
         placeholder: '',
         width: 400,
+        maxDays: undefined,
+        disabledCondition: () => false,
+    },
+};
+
+export const WithMaxDays: Story = {
+    render: (args) => <Example {...args} />,
+    args: {
+        showTime: true,
+        locale: enUS,
+        value: {
+            from: startOfDay(addDays(startOfDay(new Date()), -7)),
+            to: startOfDay(new Date()),
+        },
+        placeholder: '',
+        width: 400,
+        maxDays: 8,
+        disabledCondition: (date: Date) => date > startOfDay(new Date()),
     },
 };

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { CustomComponentProps, Size } from '@/types/common.ts';
+import { CustomComponentProps, Size } from '@/types/common';
 
 interface ButtonProps extends CustomComponentProps<'button'> {
     size?: Extract<Size, 'small' | 'medium' | 'large'>;

@@ -1,0 +1,16 @@
+@keyframes warning-color-anim {
+    0%,
+    100% {
+        color: black;
+    }
+    25%,
+    75% {
+        color: #ef4444;
+    }
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(200%);
+    }
+}
