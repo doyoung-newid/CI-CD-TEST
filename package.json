@@ -12,6 +12,7 @@
         "lint": "eslint .",
         "format": "prettier --write .",
         "build:ui": "pnpm --filter @plitvice/ui build",
+        "build:util": "pnpm --filter @plitvice/util build",
         "build-storybook": "pnpm --filter=@plitvice/ui run build-storybook"
     },
     "author": "NEWID",

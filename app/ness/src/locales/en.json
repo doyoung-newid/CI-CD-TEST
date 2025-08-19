@@ -1,0 +1,136 @@
+{
+    "common": {
+        "appName": "NEWID",
+        "welcome": "Welcome",
+        "hello": "Hello"
+    },
+    "button": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "close": "Close",
+        "start": "Start",
+        "stop": "Stop",
+        "apply": "Apply",
+        "reset": "Reset"
+    },
+    "nav": {
+        "home": {
+            "encoding": {
+                "title": "Encoding",
+                "fileUploads": "File Upload",
+                "queueStatus": "Queue Status"
+            },
+            "operations": {
+                "title": "Operations",
+                "serverStatus": "Server Status",
+                "presetList": "Preset List"
+            }
+        }
+    },
+    "fileUploads": {
+        "title": "File Uploads",
+        "description": "Upload encoding files and start the process when you're ready.\nMonitor progress in real time from the Encoding File List and manage each task efficiently.",
+        "errorFileType": "Invalid file type. Please upload a valid format (MP4, MOV, MPEG, MPG, SRT).",
+        "alertNowUploading": "File upload in progress..",
+        "section0": {
+            "title": "Files and Folders",
+            "description": "Drag and drop files here to upload, or click",
+            "or": "or",
+            "empty": "No file selected for upload",
+            "btnRun": "Run Uploads",
+            "btnPause": "Pause Uploads",
+            "tableCol0": "Name",
+            "tableCol1": "Duration",
+            "tableCol2": "Size",
+            "tableCol3": "Progress",
+            "ready": "Ready",
+            "pending": "Pending",
+            "uploading": "Uploading",
+            "uploaded": "Upload complete",
+            "encoded": "in Queue",
+            "error": "Error",
+            "alertDelete": "Delete \"{fileName}\"?",
+            "confirmDuplicated": "\"{fileName}\" already exists. Overwrite with the new file?",
+            "confirmUploading": "Begin upload? The file cannot be changed once started.",
+            "confirmPause": "Stop the upload? This will cancel all ongoing progress."
+        },
+        "section1": {
+            "title": "Uploaded Files",
+            "empty": "No files have been uploaded",
+            "btn": "Run Encoding",
+            "ready": "● Ready",
+            "error": "● Error",
+            "errorDesc": "Not Found",
+            "tableCol0": "Status",
+            "tableCol1": "Preset",
+            "tableCol2": "Name",
+            "tableCol3": "Program ID",
+            "tableCol4": "Uploaded At",
+            "tableCol5": "Until",
+            "infoSuccess": "Queued for encoding.",
+            "errorQueued": "Failed to queue for encoding.",
+            "tooltipPreset": "Apply preset to all"
+        },
+        "total": "Total",
+        "pending": "Pending",
+        "running": "Running",
+        "stopping": "Stopping",
+        "stopped": "Stopped",
+        "tableCol0": "Server",
+        "tableCol1": "Status",
+        "tableCol2": "Instance Name",
+        "tableCol3": "Instance ID",
+        "tableCol4": "Created At",
+        "tableCol5": "Updated At"
+    },
+    "queueStatus": {
+        "title": "Queue Status",
+        "description": "This page displays the list of encoded files from the past 30 days.\nYou can check the status and processing details of each task.",
+        "statusTitle": "Statistics",
+        "totalQueues": "Total Queues",
+        "pending": "Pending",
+        "running": "Running",
+        "stopped": "Stopped",
+        "completed": "Completed",
+        "tableTitle": "Encoding Files",
+        "tableCol0": "Server",
+        "tableCol1": "Status",
+        "tableCol2": "Proc Time",
+        "tableCol3": "Name",
+        "tableCol4": "Program ID",
+        "tableCol5": "Duration",
+        "tableCol7": "Created At",
+        "drawerTitle0": "Started At",
+        "drawerTitle1": "Finished At",
+        "drawerTitle2": "Note"
+    },
+    "serverStatus": {
+        "title": "Server Status",
+        "description": "This page provides real-time monitoring of our internal cloud and on-premises servers,\nincluding their current status and encoding capabilities.",
+        "total": "Total",
+        "pending": "Pending",
+        "running": "Running",
+        "stopping": "Stopping",
+        "stopped": "Stopped",
+        "tableCol0": "Server",
+        "tableCol1": "Status",
+        "tableCol2": "Instance Name",
+        "tableCol3": "Instance ID",
+        "tableCol4": "Created At",
+        "tableCol5": "Updated At"
+    },
+    "presetList": {
+        "title": "Preset List",
+        "description": "Browse available encoding presets.\nCheck their settings and apply them when encoding your content.",
+        "tableCol0": "Type",
+        "tableCol1": "Preset Name",
+        "tableCol2": "User Group",
+        "tableCol3": "Company Name",
+        "tableCol4": "Note",
+        "tableCol5": "Created At",
+        "tableCol6": "Updated At",
+        "drawerTitle0": "Encoding Option",
+        "drawerTitle1": "FFmpeg",
+        "toastClipboard": "Copied to clipboard"
+    }
+}

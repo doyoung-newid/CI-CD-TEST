@@ -1,0 +1,53 @@
+{
+    "name": "ness",
+    "private": true,
+    "version": "0.1.2",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host",
+        "build": "tsc -b && vite build",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "prettier": "prettier --write .",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@plitvice/ui": "workspace:*",
+        "@tailwindcss/vite": "catalog:",
+        "@tanstack/react-table": "^8.21.3",
+        "date-fns": "^4.1.0",
+        "i18next": "catalog:",
+        "jotai": "catalog:",
+        "js-cookie": "^3.0.5",
+        "ky": "^1.8.1",
+        "lucide-react": "^0.517.0",
+        "mediainfo.js": "^0.3.5",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "react-dropzone": "^14.3.8",
+        "react-i18next": "catalog:",
+        "react-router": "catalog:",
+        "tailwind-merge": "^3.3.1",
+        "tailwindcss": "catalog:"
+    },
+    "devDependencies": {
+        "@eslint/js": "catalog:",
+        "@tanstack/react-query": "catalog:",
+        "@types/js-cookie": "^3.0.6",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "@vitejs/plugin-react": "catalog:",
+        "eslint": "catalog:",
+        "eslint-plugin-react-hooks": "catalog:",
+        "eslint-plugin-react-refresh": "catalog:",
+        "globals": "catalog:",
+        "prettier": "catalog:",
+        "prettier-plugin-tailwindcss": "catalog:",
+        "typescript": "catalog:",
+        "typescript-eslint": "catalog:",
+        "vite": "catalog:",
+        "vite-plugin-static-copy": "^3.1.1",
+        "vite-plugin-svgr": "catalog:",
+        "vite-tsconfig-paths": "catalog:"
+    }
+}

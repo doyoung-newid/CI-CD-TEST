@@ -1,0 +1,11 @@
+{
+    "common": {
+        "appName": "NEWID",
+        "welcome": "환영합니다",
+        "hello": "안녕하세요"
+    },
+    "button": {
+        "save": "저장",
+        "cancel": "취소"
+    }
+}

@@ -2,6 +2,30 @@ import { mkdir, cp, readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
+function updateTsconfigPaths(content) {
+    const packages = [
+        { name: '@plitvice/ui', oldDir: 'ui', newDir: 'shared/ui' },
+        { name: '@plitvice/util', oldDir: 'util', newDir: 'shared/util' },
+    ];
+
+    return packages.reduce((result, pkg) => {
+        return (
+            result
+                // paths
+                .replaceAll(`"${pkg.name}": ["../${pkg.oldDir}/src"]`, `"${pkg.name}": ["../../${pkg.newDir}/src"]`)
+                .replaceAll(
+                    `"${pkg.name}/*": ["../${pkg.oldDir}/src/*"]`,
+                    `"${pkg.name}/*": ["../../${pkg.newDir}/src/*"]`,
+                )
+                // references
+                .replaceAll(
+                    `"path": "../${pkg.oldDir}/tsconfig.app.json"`,
+                    `"path": "../../${pkg.newDir}/tsconfig.app.json"`,
+                )
+        );
+    }, content);
+}
+
 async function createProject() {
     try {
         const projectName = process.argv[2];
@@ -39,14 +63,7 @@ async function createProject() {
         const tsconfigPath = path.join(projectPath, 'tsconfig.app.json');
         if (existsSync(tsconfigPath)) {
             let tsconfigContent = await readFile(tsconfigPath, 'utf8');
-            tsconfigContent = tsconfigContent.replace(
-                /"@plitvice\/ui": \["..\/ui\/src"\]/g,
-                '"@plitvice/ui": ["../../shared/ui/src"]',
-            );
-            tsconfigContent = tsconfigContent.replace(
-                /"@plitvice\/ui\/\*": \["..\/ui\/src\/\*"\]/g,
-                '"@plitvice/ui/*": ["../../shared/ui/src/*"]',
-            );
+            tsconfigContent = updateTsconfigPaths(tsconfigContent);
             await writeFile(tsconfigPath, tsconfigContent);
         }
 
